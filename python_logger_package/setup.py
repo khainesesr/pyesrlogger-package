@@ -4,14 +4,18 @@ setup(
     name='python_logger_package',
     version='0.1',
     packages=find_packages(),
-    description='A simple Python package that includes a logging decorator.',
-    author='Kaitlin',
-    author_email='kaitlin.haines@esr.cri.nz',
-    #url='https://github.com/yourusername/my_decorator_package',
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
+    install_requires=[
+        'os',  # Example of a dependency
+        'sys',  # Example of a versioned dependency
+        'pandas',
+        'datetime',
+        'smtplib',
+        'sqlalchemy',
+        'dotenv',
+        'traceback',
+        'warnings',
+        'email.mime.application','email.mime.multipart','email.mime.text'
     ],
-    python_requires='>=3.6',
+        #install_requires=['os','sys','pandas','datetime','smtplib','email.mime.application','email.mime.multipart','email.mime.text','sqlalchemy','dotenv','traceback,warnings',], # add any additional packages that 
+
 )
