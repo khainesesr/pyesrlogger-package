@@ -1,0 +1,7 @@
+setup.py
+python_logger/__init__.py
+python_logger/python_error_logging.py
+python_logger_package.egg-info/PKG-INFO
+python_logger_package.egg-info/SOURCES.txt
+python_logger_package.egg-info/dependency_links.txt
+python_logger_package.egg-info/top_level.txt
