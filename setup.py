@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='python_logger_package',
+    name='pyesrlogger',
     version='0.1',
     packages=find_packages(),
     description='A simple Python package that includes a logging decorator.',

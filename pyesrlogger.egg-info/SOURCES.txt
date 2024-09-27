@@ -1,0 +1,7 @@
+setup.py
+pyesrlogger.egg-info/PKG-INFO
+pyesrlogger.egg-info/SOURCES.txt
+pyesrlogger.egg-info/dependency_links.txt
+pyesrlogger.egg-info/top_level.txt
+python_logger/__init__.py
+python_logger/python_error_logging.py
