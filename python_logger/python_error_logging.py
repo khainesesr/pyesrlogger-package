@@ -144,7 +144,7 @@ class JobHandler:
                 with engine.connect() as error_con:
                     df.to_sql('ErrorLogger', con=error_con, if_exists='append', index=False)
                     print('row uploaded successfully')
-            except:
+            except Exception as e:
                 #with open(output_file, "a") as file:
                 #   file.write(str(e))
                 print(e)
