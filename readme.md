@@ -1,6 +1,6 @@
-# My Decorator Package
+# Package Description
 
-This package provides a simple logging decorator for Python jobs, on both success and failure.
+This package provides a simple logging decorator for Python jobs, to insert rows to an SQL table on both success and failure.
 
 ## Installation
 
