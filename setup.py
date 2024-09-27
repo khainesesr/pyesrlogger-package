@@ -4,6 +4,7 @@ setup(
     name='pyesrlogger',
     version='0.1',
     packages=find_packages(),
+    install_requires=['pyodbc'],
     description='A simple Python package that includes a logging decorator.',
     author='Kaitlin',
     author_email='kaitlin.haines@esr.cri.nz',
@@ -13,5 +14,4 @@ setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
-    install_requires=read_requirements('requirements.txt')
 )
