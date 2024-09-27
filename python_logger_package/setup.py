@@ -7,7 +7,6 @@ setup(
     install_requires=[
         'os',  # Example of a dependency
         'sys',  # Example of a versioned dependency
-        'pandas',
         'datetime',
         'smtplib',
         'sqlalchemy',
