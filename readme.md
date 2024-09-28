@@ -7,7 +7,7 @@ This package provides a simple logging decorator for Python jobs, to insert rows
 You can install the package using pip:
 
 ```bash
-pip install PythonErrorLogging
+pip install pyesrlogger
 ```
 or via
 
@@ -18,11 +18,25 @@ python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
 ## How to use
 
 ```Python
+import sys
 from pyesrlogger import JobHandler
+from datetime import datetime
 
-error_handler = JobHandler(message="testing completed error message")
+
+
+current_date = datetime.today().strftime('%Y-%m-%d')
+error_handler = JobHandler(message=f"Job completed successfuly. Updated data as at {current_date}")
+
+
 
 @error_handler
-def example_func():
-  return .
+def main():
+   print(7 / 2)  # Perform division
+   return 0
+
+
+
+print(__name__)
+if __name__ == '__main__':
+   main()
 ```
