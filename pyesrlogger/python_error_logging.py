@@ -18,7 +18,7 @@ Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
 
 class JobHandler:
-    @env_variable_check
+    @env_variable_check(uid)
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server=''):
         #pass
