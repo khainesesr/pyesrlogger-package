@@ -17,8 +17,8 @@ from .decorators import env_variable_check
 Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
 
-@env_variable_check
 class JobHandler:
+    @env_variable_check
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server=''):
         #pass
