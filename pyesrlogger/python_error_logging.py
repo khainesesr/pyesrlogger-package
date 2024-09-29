@@ -22,7 +22,7 @@ class JobHandler:
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server=''):
         #pass
-        self.message = message
+        self.message = 'job completed successfully' if not message else message
         self.uid = os.environ["sms_uat_uid"]
         self.pwd = os.environ["sms_uat_pass"]
         self.database = os.environ["sm_uat_database"]
