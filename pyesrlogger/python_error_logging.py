@@ -16,10 +16,12 @@ import warnings
 Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
 
+@load_env_files_from_dir('env_path')
 class JobHandler:
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
-    pwd='',database='',server=''):
+    pwd='',database='',server='', env_path=''):
         #pass
+        self.env_path = env_path  # Set the directory for env files
         self.message = 'job completed successfully' if not message else message
         self.uid = os.environ["sms_uat_uid"]
         self.pwd = os.environ["sms_uat_pass"]
