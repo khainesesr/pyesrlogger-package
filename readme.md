@@ -15,6 +15,11 @@ or via
 python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
 ```
 
+## Parameters
+message - optional. Message to insert to database on successful completion. Defaults to text 'job completed successfully'  
+email_recipient - optional. Defaults to error_email defined on sys_informatics environ, otherwise uses this parameter. Must be string, with email addresses separated by commas eg "email1@esr.cri.nz, email2@esr.cri.nz"  
+env_path - optional. If defining variables in directory other than top level .Renviron, pass directory path
+
 ## How to use
 
 ```Python
