@@ -13,7 +13,6 @@ from sqlalchemy import create_engine
 import dotenv
 import traceback
 import warnings
-from .decorators import env_variable_check
 Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
 
