@@ -18,7 +18,6 @@ Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
 
 class JobHandler:
-    @env_variable_check(uid)
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server=''):
         #pass
@@ -27,7 +26,15 @@ class JobHandler:
         self.pwd = os.environ["sms_uat_pass"]
         self.database = os.environ["sm_uat_database"]
         self.server = os.environ["sms_uat_server"]
-        self.odbc_driver = os.environ["sql_driver"] 
+        self.odbc_driver = os.environ["sql_driver"]
+        if 'uid' not in os.environ:
+            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+        if 'pwd' not in os.environ:
+            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+        if 'database' not in os.environ:
+            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+        if 'server' not in os.environ:
+            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
         #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
         self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
