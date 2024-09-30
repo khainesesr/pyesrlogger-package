@@ -4,12 +4,7 @@ This package provides a simple logging decorator for Python jobs, to insert rows
 
 ## Installation
 
-You can install the package using pip:
-
-```bash
-pip install pyesrlogger
-```
-or via
+You can install the package using pip install via github
 
 ```bash
 python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
