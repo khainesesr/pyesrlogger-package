@@ -15,9 +15,9 @@ import traceback
 import warnings
 Renvconfigfile='../.Renviron'
 dotenv.load_dotenv(Renvconfigfile)
-from .decorators import load_env_files_from_dir
+#from .decorators import load_env_files_from_dir
 
-@load_env_files_from_dir('env_path')
+#@load_env_files_from_dir('env_path')
 class JobHandler:
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server='', env_path=''):
