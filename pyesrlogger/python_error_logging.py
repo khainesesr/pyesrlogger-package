@@ -30,13 +30,13 @@ class JobHandler:
         self.server = os.environ["sms_uat_server"]
         self.odbc_driver = os.environ["sql_driver"]
         if 'uid' not in os.environ:
-            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+            raise KeyError(f"Environment variable 'uid' not found.")
         if 'pwd' not in os.environ:
-            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+            raise KeyError(f"Environment variable 'pwd' not found.")
         if 'database' not in os.environ:
-            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+            raise KeyError(f"Environment variable 'database' not found.")
         if 'server' not in os.environ:
-            raise KeyError(f"Environment variable 'MY_ENV_VAR' not found.")
+            raise KeyError(f"Environment variable 'server' not found.")
         #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
         self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
