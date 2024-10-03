@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-def load_env_files(*env_files):
+def load_env_files_from_dir(*env_files):
     """Decorator to load multiple environment variable files."""
     def decorator(cls):
         original_init = cls.__init__  # Store the original __init__ method
