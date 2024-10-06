@@ -13,11 +13,10 @@ from sqlalchemy import create_engine
 import dotenv
 import traceback
 import warnings
-Renvconfigfile='../.Renviron'
-dotenv.load_dotenv(Renvconfigfile)
-#from .decorators import load_env_files_from_dir
+from envdecorator import load_env_from_dir
 
-#@load_env_files_from_dir('env_path')
+curr = str(os.getcwd())
+@load_env_from_dir(curr)
 class JobHandler:
     def __init__(self,message='job completed successfully',email_recipient='',uid='',
     pwd='',database='',server='', env_path=''):
