@@ -34,14 +34,9 @@ This decorator is intended to be used in conjunction with a main() function. Any
 ```Python
 import sys
 import importlib
-#importlib.import_module("python-logger-package")
 from pyesrlogger import JobHandler
 from envdecorator import load_env_from_dir
 import os
-#error_handler = JobHandler(message="testing completed error message")
-#import sys
-
-
 
 error_handler = JobHandler(message="testing completed error message",env_path='/home/khaines/test_python_error_logging')
 curr = os.getcwd()
