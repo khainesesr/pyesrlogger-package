@@ -4,7 +4,7 @@ setup(
     name='pyesrlogger',
     version='0.1',
     packages=find_packages(),
-    install_requires=['pyodbc','sqlalchemy','pandas','python-dotenv','envdecorator @ git+https://github.com/khainesesr/envdecorator-package.git#egg=envdecorator'],
+    install_requires=['pyodbc','sqlalchemy','pandas','python-dotenv'],
     description='A simple Python package that includes a logging decorator.',
     author='Kaitlin',
     author_email='kaitlin.haines@esr.cri.nz',
