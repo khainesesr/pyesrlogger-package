@@ -4,10 +4,21 @@ This package provides a simple logging decorator for Python jobs, to insert rows
 
 ## Installation
 
+Before installing this package, please run
+```Python
+pip install --upgrade pip setuptools wheel
+```
+
 You can install the package using pip install via github
 
 ```bash
 python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
+```
+
+if there is a pyodbc related error during install, please run the below command
+
+```Python
+python -m pip install pyodbc
 ```
 
 ## Parameters
