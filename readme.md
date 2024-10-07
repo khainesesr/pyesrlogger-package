@@ -15,10 +15,11 @@ You can install the package using pip install via github
 python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
 ```
 
-if there is a pyodbc related error during install, please run the below command
+if there is a pyodbc related error during install, please run the below commands
 
 ```Python
 python -m pip install pyodbc
+pip install git+https://github.com/khainesesr/envdecorator-package.git
 ```
 
 ## Parameters
@@ -27,27 +28,34 @@ email_recipient - optional. Defaults to error_email defined on sys_informatics e
 env_path - optional. If defining variables in directory other than top level .Renviron, pass directory path
 
 ## How to use
+This decorator is intended to be used in conjunction with a main() function. Any exceptions returned by sub-functions or caught in the main() function will be captured.
+
 
 ```Python
 import sys
+import importlib
+#importlib.import_module("python-logger-package")
 from pyesrlogger import JobHandler
-from datetime import datetime
+from envdecorator import load_env_from_dir
+import os
+#error_handler = JobHandler(message="testing completed error message")
+#import sys
 
 
 
-current_date = datetime.today().strftime('%Y-%m-%d')
-error_handler = JobHandler(message=f"Job completed successfuly. Updated data as at {current_date}")
+error_handler = JobHandler(message="testing completed error message",env_path='/home/khaines/test_python_error_logging')
+curr = os.getcwd()
 
-
+def test_subfunc():
+        return 7/0
 
 @error_handler
+@load_env_from_dir(curr)
 def main():
-   print(7 / 2)  # Perform division
-   return 0
-
-
+    zero_div = test_subfunc()  # Perform division
+    return zero_div
 
 print(__name__)
 if __name__ == '__main__':
-   main()
+    main()
 ```
