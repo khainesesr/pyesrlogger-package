@@ -38,7 +38,7 @@ from pyesrlogger import JobHandler
 from envdecorator import load_env_from_dir
 import os
 
-error_handler = JobHandler(message="testing completed error message",env_path='/home/khaines/test_python_error_logging')
+error_handler = JobHandler(message="testing completed error message",email_recipients='kaitlin.haines@esr.cri.nz')
 curr = os.getcwd()
 
 def test_subfunc():
