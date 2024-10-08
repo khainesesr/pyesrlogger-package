@@ -40,7 +40,7 @@ class JobHandler:
         self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
-        self.email_recipient = ''
+        self.email_recipient = email_recipient if email_recipient else ''
         self.custom = ''#custom_msg
 
     def __call__(self, func):
@@ -54,7 +54,6 @@ class JobHandler:
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
             self.status = 'Error'
-            self.email_recipient = 'kaitlin.haines@esr.cri.nz'
             df = self.write_error(self.status,error,self.email_recipient,stack,self.error_log)
             self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
         #No exception encountered
