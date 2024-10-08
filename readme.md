@@ -15,7 +15,7 @@ You can install the package using pip install via github
 python -m pip install git+https://github.com/khainesesr/pyesrlogger.git
 ```
 
-if there is a pyodbc related error during install, please run the below commands
+if there is a pyodbc or 'envdecorator' related error during install, please run the below commands
 
 ```Python
 python -m pip install pyodbc
