@@ -18,7 +18,7 @@ from envdecorator import load_env_from_dir
 curr = str(os.getcwd())
 @load_env_from_dir(curr)
 class JobHandler:
-    def __init__(self,message='job completed successfully',email_recipient='',uid='',
+    def __init__(self,message='job completed successfully',email_recipients='',uid='',
     pwd='',database='',server='', env_path=''):
         #pass
         self.env_path = env_path  # Set the directory for env files
@@ -40,7 +40,7 @@ class JobHandler:
         self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
-        self.email_recipient = email_recipient if email_recipient else ''
+        self.email_recipient = email_recipients if email_recipients else ''
         self.custom = ''#custom_msg
 
     def __call__(self, func):
