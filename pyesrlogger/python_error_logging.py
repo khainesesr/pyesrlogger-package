@@ -23,19 +23,21 @@ class JobHandler:
         #pass
         self.env_path = env_path  # Set the directory for env files
         self.message = 'job completed successfully' if not message else message
-        self.uid = os.environ["sms_uat_uid"]
-        self.pwd = os.environ["sms_uat_pass"]
-        self.database = os.environ["sm_uat_database"]
-        self.server = os.environ["sms_uat_server"]
-        self.odbc_driver = os.environ["sql_driver"]
-        if 'sms_uat_uid' not in os.environ:
-            raise KeyError(f"Environment variable 'uid' not found.")
-        if 'sms_uat_pass' not in os.environ:
-            raise KeyError(f"Environment variable 'pwd' not found.")
-        if 'sm_uat_database' not in os.environ:
-            raise KeyError(f"Environment variable 'database' not found.")
-        if 'sms_uat_server' not in os.environ:
-            raise KeyError(f"Environment variable 'server' not found.")
+        self.user = os.getlogin()
+        if self.user = 'sys_informatics':
+            self.uid = os.environ["sms_uat_uid"]
+            self.pwd = os.environ["sms_uat_pass"]
+            self.database = os.environ["sm_uat_database"]
+            self.server = os.environ["sms_uat_server"]
+            self.odbc_driver = os.environ["sql_driver"]
+            if 'sms_uat_uid' not in os.environ:
+                raise KeyError(f"Environment variable 'uid' not found.")
+            if 'sms_uat_pass' not in os.environ:
+                raise KeyError(f"Environment variable 'pwd' not found.")
+            if 'sm_uat_database' not in os.environ:
+                raise KeyError(f"Environment variable 'database' not found.")
+            if 'sms_uat_server' not in os.environ:
+                raise KeyError(f"Environment variable 'server' not found.")
         #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
         self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
@@ -54,12 +56,14 @@ class JobHandler:
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
             self.status = 'Error'
-            df = self.write_error(self.status,error,self.email_recipient,stack,self.error_log)
-            self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
+            df = self.write_error(self.status,error,self.email_recipient,stack,self.error_log,self.user)
+            if self.user = 'sys_informatics':
+                self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
         #No exception encountered
         elif stack is None:
-            df = self.write_error(self.status,self.message,self.email_recipient,'',self.error_log)
-            self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,self.message,self.error_log)
+            df = self.write_error(self.status,self.message,self.email_recipient,'',self.error_log,self.user)
+            if self.user = 'sys_informatics':
+                self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,self.message,self.error_log)
         return wrapper
 
     def handle_error(self, error):
@@ -106,7 +110,7 @@ class JobHandler:
                         file.write('No email addresses found, no email sent')
                     warnings.warn('No email addresses found, no email sent')
 
-    def write_error(self,status,message,email,stack,output_file):
+    def write_error(self,status,message,email,stack,output_file,user):
             nl = '\n'
             #Set error_message as only custom message on successful complete
             if message and status == 'Completed':
@@ -121,7 +125,6 @@ class JobHandler:
                 path = 'Cannot determine path'
                 with open(output_file, "a") as file:
                     file.write('Cannot determine path')
-            user = os.getenv("USER")
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
             
             df = pd.DataFrame({
