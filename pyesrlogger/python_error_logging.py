@@ -59,10 +59,10 @@ class JobHandler:
             except Exception as e:
                 return e,sys.exc_info()  # Or handle the error as needed
         error,stack = wrapper()
-        traceback_info = self.get_traceback()
-        print(f"Error occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
+            traceback_info = self.get_traceback()
+            print(f"Error occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
             self.status = 'Error'
             df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
             if self.user = 'sys_informatics':
