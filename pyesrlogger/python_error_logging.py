@@ -14,6 +14,7 @@ import dotenv
 import traceback
 import warnings
 from envdecorator import load_env_from_dir
+from pathlib import Path
 
 curr = str(os.getcwd())
 @load_env_from_dir(curr)
@@ -39,12 +40,18 @@ class JobHandler:
             if 'sms_uat_server' not in os.environ:
                 raise KeyError(f"Environment variable 'server' not found.")
         #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
-        self.error_log = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
+        source_path = Path(__file__)
+        self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
         self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
         self.email_recipient = email_recipients if email_recipients else ''
         self.custom = ''#custom_msg
-
+    
+    def get_traceback(self):
+        source_path = Path(__file__)
+        self.error_log = source_path.parent.absolute()
+        self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
+    
     def __call__(self, func):
         def wrapper(*args, **kwargs):
             try:
@@ -52,11 +59,12 @@ class JobHandler:
             except Exception as e:
                 return e,sys.exc_info()  # Or handle the error as needed
         error,stack = wrapper()
-        print(stack)
+        traceback_info = self.get_traceback()
+        print(f"Error occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
             self.status = 'Error'
-            df = self.write_error(self.status,error,self.email_recipient,stack,self.error_log,self.user)
+            df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
             if self.user = 'sys_informatics':
                 self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
         #No exception encountered
