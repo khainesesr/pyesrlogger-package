@@ -29,7 +29,11 @@ env_path - optional. If defining variables in directory other than top level .Re
 
 ## How to use
 This decorator is intended to be used in conjunction with a main() function. Any exceptions returned by sub-functions or caught in the main() function will be captured.
+The JobHandler() class automatically loads any .env or .Renviron from the current working directory. To load from another directory, please specify using decorator
 
+```Python
+@load_env_from_dir(dir_name)
+```
 
 ```Python
 import sys
@@ -39,13 +43,11 @@ from envdecorator import load_env_from_dir
 import os
 
 error_handler = JobHandler(message="testing completed error message",email_recipients='kaitlin.haines@esr.cri.nz')
-curr = os.getcwd()
 
 def test_subfunc():
         return 7/0
 
 @error_handler
-@load_env_from_dir(curr)
 def main():
     zero_div = test_subfunc()  # Perform division
     return zero_div
