@@ -32,6 +32,7 @@ This decorator is intended to be used in conjunction with a main() function. Any
 The JobHandler() class automatically loads any .env or .Renviron from the current working directory. To load from another directory, please specify using decorator
 
 ```Python
+dir_name = 'path/to/dir'
 @load_env_from_dir(dir_name)
 ```
 
