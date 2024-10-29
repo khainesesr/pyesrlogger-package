@@ -25,7 +25,7 @@ class JobHandler:
         self.env_path = env_path  # Set the directory for env files
         self.message = 'job completed successfully' if not message else message
         self.user = os.getlogin()
-        if self.user = 'sys_informatics':
+        if self.user == 'sys_informatics':
             self.uid = os.environ["sms_uat_uid"]
             self.pwd = os.environ["sms_uat_pass"]
             self.database = os.environ["sm_uat_database"]
@@ -41,17 +41,24 @@ class JobHandler:
                 raise KeyError(f"Environment variable 'server' not found.")
         #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
         source_path = Path(__file__)
-        self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
+        #print(source_path.parent)
+        #print(source_path.absolute())
+        current_path = os.path.abspath(__file__)
+        self.error_log = os.path.basename(os.path.dirname(current_path)) + '/log.txt'
+        #self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
+        #self.error_log = str(source_path.parent.absolute()) + '/log.txt'
+        #print(self.error_log)
         self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
         self.email_recipient = email_recipients if email_recipients else ''
         self.custom = ''#custom_msg
-    
+
     def get_traceback(self):
-        source_path = Path(__file__)
-        self.error_log = source_path.parent.absolute()
-        self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
-    
+        #source_path = Path(__file__)
+        #self.error_log = source_path.parent.absolute()
+        #self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
+        return traceback.extract_stack()
+
     def __call__(self, func):
         def wrapper(*args, **kwargs):
             try:
@@ -62,27 +69,28 @@ class JobHandler:
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
             traceback_info = self.get_traceback()
-            print(f"Error occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
-            self.status = 'Error'
-            df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
-            if self.user = 'sys_informatics':
-                self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
+            if traceback_info:
+                print(f"{str(error)} exception occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
+                self.status = 'Error'
+                df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
+                if self.user == 'sys_informatics':
+                    self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
         #No exception encountered
         elif stack is None:
             df = self.write_error(self.status,self.message,self.email_recipient,'',self.error_log,self.user)
-            if self.user = 'sys_informatics':
+            if self.user == 'sys_informatics':
                 self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,self.message,self.error_log)
         return wrapper
 
     def handle_error(self, error):
         # Default error handling behavior
         print(f"An error occurred: {error}")
-        
+
     def find_filename(self,status):
         "Return filename soure of error"
-        print(os.path.abspath(sys.argv[0]))
+        #print(os.path.abspath(sys.argv[0]))
         return os.path.abspath(sys.argv[0])
-  
+
     def send_email(self,df,status,error,email,output_file,path):
             """Send email on error, with various parameters"""
             if status == 'Error' and email and email != None :  #and email.strip()
@@ -94,10 +102,10 @@ class JobHandler:
                     msg['To'] = ", ".join(email.split(","))
                     lines = [f"{column}:" + "\n".join(df[column].astype(str).tolist()) + "\n" \
                         for column in df.columns]
-                    log_dir = os.path.dirname(os.path.realpath(__file__))
+                    #log_dir = os.path.dirname(os.path.realpath(__file__))
                     #Prep email message contents
                     lines = lines + \
-                        [f'Please refer to log file under {log_dir} for additional error info']
+                        [f'Please refer to log file under {output_file} for additional error info']
                     msg.attach(MIMEText("\n".join(lines), 'plain'))
                     # Send the email
                     s = smtplib.SMTP('mail.esr.cri.nz')
@@ -125,16 +133,16 @@ class JobHandler:
                 error_message = message
             #Set error_message as both custom message and error message
             elif message and stack:
-                error_message = f'{str(stack[0])}. Source: line {stack[2].tb_lineno}.'
+                error_message = f'{str(message)}. Source: line {stack[0].lineno}.'
+                #error_message = 'test'
             path = ""
             path = self.find_filename(status)
             if not path:
-                print(path)
                 path = 'Cannot determine path'
                 with open(output_file, "a") as file:
                     file.write('Cannot determine path')
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-            
+
             df = pd.DataFrame({
                 "Status": [status],
                 "path": [path],
@@ -151,10 +159,10 @@ class JobHandler:
                 with open(output_file, "a") as file:
                     file.write('Cannot send email')
             return df
-          
+
     def database_load(self,df,uid,pwd,db,server,driver,message,output_file):
         """Insert job run details to database"""
-        #Remove unnecessary text included in email to database. 
+        #Remove unnecessary text included in email to database.
         #Only insert error or custom message
         df['errormessage'] = str(message)
         if uid and pwd and db and server:
@@ -172,4 +180,3 @@ class JobHandler:
                 pass
         else:
             warnings.warn("Credentials not all supplied for connection string. Please check all credentials supplied in env file")
-
