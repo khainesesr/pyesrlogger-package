@@ -16,12 +16,12 @@ import warnings
 from envdecorator import load_env_from_dir
 from pathlib import Path
 
-curr = str(os.getcwd())
-@load_env_from_dir(curr)
 class JobHandler:
     def __init__(self,message='job completed successfully',email_recipients='',uid='',
     pwd='',database='',server='', env_path=''):
-        #pass
+        curr_dir = str(os.getcwd())
+        main_string = ",".join([curr_dir, env_path])
+        load_env_from_dir(main_string)
         self.env_path = env_path  # Set the directory for env files
         self.message = 'job completed successfully' if not message else message
         self.user = os.getlogin()
@@ -45,18 +45,12 @@ class JobHandler:
         #print(source_path.absolute())
         current_path = os.path.abspath(__file__)
         self.error_log = os.path.basename(os.path.dirname(current_path)) + '/log.txt'
-        #self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
-        #self.error_log = str(source_path.parent.absolute()) + '/log.txt'
-        #print(self.error_log)
         self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
         self.email_recipient = email_recipients if email_recipients else ''
         self.custom = ''#custom_msg
 
     def get_traceback(self):
-        #source_path = Path(__file__)
-        #self.error_log = source_path.parent.absolute()
-        #self.error_log = os.path.basename(os.path.dirname(source_path)) + '/log.txt'
         return traceback.extract_stack()
 
     def __call__(self, func):
@@ -82,13 +76,8 @@ class JobHandler:
                 self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,self.message,self.error_log)
         return wrapper
 
-    def handle_error(self, error):
-        # Default error handling behavior
-        print(f"An error occurred: {error}")
-
     def find_filename(self,status):
         "Return filename soure of error"
-        #print(os.path.abspath(sys.argv[0]))
         return os.path.abspath(sys.argv[0])
 
     def send_email(self,df,status,error,email,output_file,path):
@@ -112,18 +101,11 @@ class JobHandler:
                     s.send_message(msg)
                     s.quit()
                 except Exception as e:
-                    print(e)
-                    with open(output_file, "a") as file:
-                        file.write(str(e))
-                    pass
+                    warnings.warn(e)
             else:
                 if status != 'Error':
-                    with open(output_file, "a") as file:
-                        file.write('Job completed successfully, no email sent.')
                     print('Job completed successfully, no email sent.')
                 if status == 'Error' and not email:
-                    with open(output_file, "a") as file:
-                        file.write('No email addresses found, no email sent')
                     warnings.warn('No email addresses found, no email sent')
 
     def write_error(self,status,message,email,stack,output_file,user):
@@ -139,8 +121,7 @@ class JobHandler:
             path = self.find_filename(status)
             if not path:
                 path = 'Cannot determine path'
-                with open(output_file, "a") as file:
-                    file.write('Cannot determine path')
+                warnings.warn(path)
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
             df = pd.DataFrame({
@@ -173,9 +154,6 @@ class JobHandler:
                     df.to_sql('ErrorLogger', con=error_con, if_exists='append', index=False)
                     print('row uploaded successfully')
             except Exception as e:
-                #with open(output_file, "a") as file:
-                #   file.write(str(e))
-                print(e)
                 warnings.warn(e)
                 pass
         else:
