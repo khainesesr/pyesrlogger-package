@@ -1,6 +1,6 @@
 # Package Description
 
-This package provides a simple logging decorator for Python jobs. This decorator will insert rows to an SQL table on both success and failure, and send an email on failure to specified individuals.
+This package provides a simple logging decorator for Python jobs. When deployed on sys_informatics account, this decorator will insert rows to an SQL table on both success and failure, and send an email on failure to specified individuals. Testing locally on windows will only return a string representation of the error in the python terminal.
 
 ## Installation
 
