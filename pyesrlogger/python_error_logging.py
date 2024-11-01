@@ -17,13 +17,11 @@ from envdecorator import load_env_from_dir
 from pathlib import Path
 
 class JobHandler:
-    def __init__(self,message='job completed successfully',email_recipients='',uid='',
-    pwd='',database='',server='', env_path=''):
+    def __init__(self,message='Job completed successfully',email_recipients='',server='', env_path=''):
         curr_dir = str(os.getcwd())
-        main_string = ",".join([curr_dir, env_path])
-        load_env_from_dir(main_string)
-        self.env_path = env_path  # Set the directory for env files
-        self.message = 'job completed successfully' if not message else message
+        env_string = ",".join([curr_dir, env_path])
+        load_env_from_dir(env_string)
+        self.message = 'Job completed successfully' if not message else message #use default message for jobs finish successfully.
         self.user = os.getlogin()
         if self.user == 'sys_informatics':
             self.uid = os.environ["sms_uat_uid"]
@@ -45,10 +43,8 @@ class JobHandler:
         #print(source_path.absolute())
         current_path = os.path.abspath(__file__)
         self.error_log = os.path.basename(os.path.dirname(current_path)) + '/log.txt'
-        self.error = sys.exc_info()[0] #error
         self.status = 'Completed'
         self.email_recipient = email_recipients if email_recipients else ''
-        self.custom = ''#custom_msg
 
     def get_traceback(self):
         return traceback.extract_stack()
@@ -84,7 +80,7 @@ class JobHandler:
             """Send email on error, with various parameters"""
             if status == 'Error' and email and email != None :  #and email.strip()
                 try:
-                    msg = MIMEMultipart() #MIMEMultipart('alternative')
+                    msg = MIMEMultipart()
                     msg['Subject'] = f'sys_informatics error - {path}'
                     msg['From'] = "sysinformatics@esr.cri.nz"
                     #Split email string into list and then convert back to string for encode
@@ -96,7 +92,7 @@ class JobHandler:
                     lines = lines + \
                         [f'Please refer to log file under {output_file} for additional error info']
                     msg.attach(MIMEText("\n".join(lines), 'plain'))
-                    # Send the email
+                    # Send email
                     s = smtplib.SMTP('mail.esr.cri.nz')
                     s.send_message(msg)
                     s.quit()
@@ -109,7 +105,6 @@ class JobHandler:
                     warnings.warn('No email addresses found, no email sent')
 
     def write_error(self,status,message,email,stack,output_file,user):
-            nl = '\n'
             #Set error_message as only custom message on successful complete
             if message and status == 'Completed':
                 error_message = message
@@ -123,7 +118,6 @@ class JobHandler:
                 path = 'Cannot determine path'
                 warnings.warn(path)
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-
             df = pd.DataFrame({
                 "Status": [status],
                 "path": [path],
@@ -134,17 +128,14 @@ class JobHandler:
             try:
                 self.send_email(df,status,message,email,output_file,path)
             except Exception as e:
-                print(str(e))
                 warnings.warn(e)
                 warnings.warn("Cannot send email")
-                with open(output_file, "a") as file:
-                    file.write('Cannot send email')
             return df
 
     def database_load(self,df,uid,pwd,db,server,driver,message,output_file):
         """Insert job run details to database"""
         #Remove unnecessary text included in email to database.
-        #Only insert error or custom message
+        #Only insert string representation of error, or custom message
         df['errormessage'] = str(message)
         if uid and pwd and db and server:
             try:
@@ -152,9 +143,8 @@ class JobHandler:
                 engine = create_engine(connection_string, echo=False) # Set echo to True to see SQL queries in the console
                 with engine.connect() as error_con:
                     df.to_sql('ErrorLogger', con=error_con, if_exists='append', index=False)
-                    print('row uploaded successfully')
+                    print('row inserted successfully')
             except Exception as e:
                 warnings.warn(e)
-                pass
         else:
-            warnings.warn("Credentials not all supplied for connection string. Please check all credentials supplied in env file")
+            warnings.warn("Credentials not all supplied for connection string. Please check all credentials are supplied in env file")
