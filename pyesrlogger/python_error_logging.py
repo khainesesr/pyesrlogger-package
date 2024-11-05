@@ -58,9 +58,10 @@ class JobHandler:
         error,stack = wrapper()
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
-            traceback_info = self.get_traceback()
+            traceback_info = traceback.extract_tb(stack[2])
             if traceback_info:
-                print(f"{str(error)} exception occurred in file: {traceback_info[0].filename}, line: {traceback_info[0].lineno}")
+                nl = '\n'
+                print(f"{str(error)} exception. {nl} Filename {traceback_info[-1].filename}, line number {traceback_info[-1].lineno}, at {traceback_info[-1].line}")
                 self.status = 'Error'
                 df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
                 if self.user == 'sys_informatics':
@@ -110,8 +111,8 @@ class JobHandler:
                 error_message = message
             #Set error_message as both custom message and error message
             elif message and stack:
-                error_message = f'{str(message)}. Source: line {stack[0].lineno}.'
-                #error_message = 'test'
+                nl = '\n'
+                error_message = f'{str(message)} exception. {nl} Filename {stack[-1].filename}, line number {stack[-1].lineno}, at {stack[-1].line}'
             path = ""
             path = self.find_filename(status)
             if not path:
