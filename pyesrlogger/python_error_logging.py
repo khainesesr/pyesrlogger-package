@@ -37,24 +37,20 @@ class JobHandler:
                 raise KeyError(f"Environment variable 'database' not found.")
             if 'sms_uat_server' not in os.environ:
                 raise KeyError(f"Environment variable 'server' not found.")
-        #self.email_recipient = os.environ["error_email"] if error else '' #PROD deployment
+        #Return working directory for source file that calls this decorator
         source_path = Path(__file__)
-        #print(source_path.parent)
-        #print(source_path.absolute())
         current_path = os.path.abspath(__file__)
         self.error_log = os.path.basename(os.path.dirname(current_path)) + '/log.txt'
         self.status = 'Completed'
-        self.email_recipient = email_recipients if email_recipients else ''
-
-    def get_traceback(self):
-        return traceback.extract_stack()
+        #Use os.environ.get to avoid key error here
+        self.email_recipient = email_recipients if email_recipients else os.environ["error_email"] if os.environ.get("error_email") else ''
 
     def __call__(self, func):
         def wrapper(*args, **kwargs):
             try:
                 return 'Success',func(*args, **kwargs)
             except Exception as e:
-                return e,sys.exc_info()  # Or handle the error as needed
+                return e,sys.exc_info()
         error,stack = wrapper()
         #The wrapper function encounted an Exception
         if isinstance(error, Exception):
@@ -64,11 +60,13 @@ class JobHandler:
                 print(f"{str(error)} exception. {nl} Filename {traceback_info[-1].filename}, line number {traceback_info[-1].lineno}, at {traceback_info[-1].line}")
                 self.status = 'Error'
                 df = self.write_error(self.status,error,self.email_recipient,traceback_info,self.error_log,self.user)
+                #Only insert row when user is sys_informatics
                 if self.user == 'sys_informatics':
                     self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,error,self.error_log)
-        #No exception encountered
+        #No exception encountered. Continue as script has completed successfully
         elif stack is None:
             df = self.write_error(self.status,self.message,self.email_recipient,'',self.error_log,self.user)
+            #Only insert row when user is sys_informatics
             if self.user == 'sys_informatics':
                 self.database_load(df,self.uid,self.pwd,self.database,self.server,self.odbc_driver,self.message,self.error_log)
         return wrapper
@@ -79,8 +77,9 @@ class JobHandler:
 
     def send_email(self,df,status,error,email,output_file,path):
             """Send email on error, with various parameters"""
-            if status == 'Error' and email and email != None :  #and email.strip()
+            if status == 'Error' and email and email != None :
                 try:
+                    #Setup email defaults
                     msg = MIMEMultipart()
                     msg['Subject'] = f'sys_informatics error - {path}'
                     msg['From'] = "sysinformatics@esr.cri.nz"
@@ -88,7 +87,6 @@ class JobHandler:
                     msg['To'] = ", ".join(email.split(","))
                     lines = [f"{column}:" + "\n".join(df[column].astype(str).tolist()) + "\n" \
                         for column in df.columns]
-                    #log_dir = os.path.dirname(os.path.realpath(__file__))
                     #Prep email message contents
                     lines = lines + \
                         [f'Please refer to log file under {output_file} for additional error info']
@@ -106,10 +104,11 @@ class JobHandler:
                     warnings.warn('No email addresses found, no email sent')
 
     def write_error(self,status,message,email,stack,output_file,user):
+            """Generate and format dataframe presented in error email"""
             #Set error_message as only custom message on successful complete
             if message and status == 'Completed':
                 error_message = message
-            #Set error_message as both custom message and error message
+            #Set error_message as error message and error details
             elif message and stack:
                 nl = '\n'
                 error_message = f'{str(message)} exception. {nl} Filename {stack[-1].filename}, line number {stack[-1].lineno}, at {stack[-1].line}'
